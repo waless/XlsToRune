@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"path"
 	"strings"
@@ -12,31 +13,34 @@ import (
 // ファイル拡張子
 const RuneExt = ".rune"
 
-type settingParam struct {
+type SettingParam struct {
 	input string
 	pout  *string
 }
 
-var gsetting settingParam
+func ParseArgs() SettingParam {
+	var result SettingParam
 
-func main() {
-	parseArgs()
-}
-
-func parseArgs() {
 	// 入力ファイルパス(必須)
 	// 先頭に引数名なしで書かれている事を意図している
 	var in = ""
 	if len(os.Args) > 1 {
 		in = os.Args[1]
 	}
-	gsetting.input = in
+	result.input = in
 
 	// 補助引数(なくても良い)
 	var out_default = makeOutputDefaultPath(in)
-	gsetting.pout = flag.String("o", out_default, "出力ファイルパス")
+	result.pout = flag.String("o", out_default, "出力ファイルパス")
 
 	flag.Parse()
+
+	return result
+}
+
+func (c *SettingParam) Print() {
+	fmt.Println(c.input)
+	fmt.Println(*c.pout)
 }
 
 func makeOutputDefaultPath(input_path string) string {
