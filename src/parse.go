@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/xuri/excelize/v2"
@@ -43,6 +44,16 @@ type RuneTypeTable struct {
 	values []RuneTypeValue
 }
 
+func (c *RuneTypeTable) findTypeValueFromColIndex(col_index int) int {
+	for i, v := range c.values {
+		if v.colIndex == col_index {
+			return i
+		}
+	}
+
+	return -1
+}
+
 type RuneTypeSheet struct {
 	name   string
 	tables []RuneTypeTable
@@ -76,6 +87,9 @@ func ParseXls(path string) (RuneTypeBook, error) {
 	if err != nil {
 		return gctx.runeBook, err
 	}
+
+	name := strings.Split(filepath.Base(path), ".")[0]
+	gctx.runeBook.name = name
 
 	sheets := file.GetSheetList()
 	for i := 0; i < len(sheets); i++ {
@@ -141,9 +155,16 @@ func parseColsForNone(cols []string) error {
 }
 
 func parseColsForTable(cols []string) error {
-	//current_table := gctx.currentTable
-	//for _, col := range cols {
-	//}
+	current_table := gctx.currentTable
+	for i, col := range cols {
+		index := current_table.findTypeValueFromColIndex(i)
+		if index < 0 {
+			continue
+		}
+
+		type_value := current_table.values[index]
+		type_value.valueArray = append(type_value.valueArray, col)
+	}
 
 	return nil
 }
