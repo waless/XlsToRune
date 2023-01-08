@@ -63,6 +63,7 @@ const (
 type context struct {
 	runeBook     RuneTypeBook
 	currentType  contextType
+	currentSheet RuneTypeSheet
 	currentTable RuneTypeTable
 	rowIndex     int
 	colIndex     int
@@ -86,6 +87,12 @@ func ParseXls(path string) (RuneTypeBook, error) {
 		}
 
 		gctx.rowIndex = 0
+
+		if len(gctx.currentSheet.tables) > 0 {
+			gctx.runeBook.sheets = append(gctx.runeBook.sheets, gctx.currentSheet)
+		}
+		gctx.currentSheet = RuneTypeSheet{}
+		gctx.currentSheet.name = name
 		for rows.Next() {
 			cols, err := rows.Columns()
 			if err != nil {
@@ -134,12 +141,17 @@ func parseColsForNone(cols []string) error {
 }
 
 func parseColsForTable(cols []string) error {
-	fmt.Println(cols)
+	//current_table := gctx.currentTable
+	//for _, col := range cols {
+	//}
 
 	return nil
 }
 
 func newCurrentTable(cols []string) error {
+	if len(gctx.currentTable.values) > 0 {
+		gctx.currentSheet.tables = append(gctx.currentSheet.tables, gctx.currentTable)
+	}
 	gctx.currentTable = RuneTypeTable{}
 	gctx.colIndex = 0
 	for _, col := range cols {
