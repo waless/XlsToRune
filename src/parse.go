@@ -243,6 +243,7 @@ func parseTypeValue(str string, t ERuneType) RuneTypeValue {
 
 	strs := parseTypeString(str)
 	result.typeName.value = strs[0]
+	result.colIndex = gctx.colIndex
 
 	return result
 }
