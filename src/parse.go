@@ -174,7 +174,23 @@ func newCurrentTable(cols []string) error {
 
 func checkTypeValidity(str string) error {
 	strs := strings.Split(str, ":")
-	if len(strs) == 2 {
+	str_len := len(strs)
+
+	validity := true
+	if str_len == 1 {
+		str := strs[0]
+		if strings.Contains(str, SRuneType) {
+			validity = true
+		} else {
+			validity = false
+		}
+	} else if str_len == 2 {
+		validity = true
+	} else {
+		validity = false
+	}
+
+	if validity {
 		return nil
 	} else {
 		return fmt.Errorf("%s : invalid type string : %s", makeRuneErrorPrefix(), str)
