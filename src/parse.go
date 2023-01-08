@@ -70,11 +70,10 @@ type context struct {
 
 var gctx context
 
-func ParseXls(path string) RuneTypeBook {
+func ParseXls(path string) (RuneTypeBook, error) {
 	file, err := excelize.OpenFile(path)
 	if err != nil {
-		fmt.Println(err)
-		return gctx.runeBook
+		return gctx.runeBook, err
 	}
 
 	sheets := file.GetSheetList()
@@ -83,53 +82,66 @@ func ParseXls(path string) RuneTypeBook {
 
 		rows, err := file.Rows(name)
 		if err != nil {
-			fmt.Println(err)
-			return gctx.runeBook
+			return gctx.runeBook, err
 		}
 
 		gctx.rowIndex = 0
 		for rows.Next() {
 			cols, err := rows.Columns()
 			if err != nil {
-				fmt.Println(err)
-				return gctx.runeBook
+				return gctx.runeBook, err
 			}
 
-			parseCols(cols)
+			err = parseCols(cols)
+			if err != nil {
+				return gctx.runeBook, err
+			}
 			gctx.rowIndex++
 		}
 	}
 
-	return gctx.runeBook
+	return gctx.runeBook, nil
 }
 
-func parseCols(cols []string) {
+func parseCols(cols []string) error {
 	gctx.colIndex = 0
 
 	switch gctx.currentType {
 	case ContextNone:
-		parseColsForNone(cols)
+		return parseColsForNone(cols)
 	case ContextTable:
-		parseColsForTable(cols)
+		return parseColsForTable(cols)
 	}
+
+	return nil
 }
 
-func parseColsForNone(cols []string) {
-	for _, col := range cols {
-		switch col {
-		case SRuneType:
-			newCurrentTable(cols)
-			return
+func parseColsForNone(cols []string) error {
+	if len(cols) <= 0 {
+		return nil
+	}
+
+	col := cols[0]
+	if col == SRuneType {
+		err := newCurrentTable(cols)
+		if err != nil {
+			return err
 		}
-		gctx.colIndex++
+		gctx.currentType = ContextTable
 	}
+
+	return nil
 }
 
-func parseColsForTable(cols []string) {
+func parseColsForTable(cols []string) error {
+	fmt.Println(cols)
+
+	return nil
 }
 
 func newCurrentTable(cols []string) error {
 	gctx.currentTable = RuneTypeTable{}
+	gctx.colIndex = 0
 	for _, col := range cols {
 		value := strings.Trim(col, " ")
 
@@ -153,6 +165,8 @@ func newCurrentTable(cols []string) error {
 				parseSFloat(col)
 			}
 		}
+
+		gctx.colIndex++
 	}
 
 	return nil

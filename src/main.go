@@ -1,8 +1,13 @@
 package main
 
+import "fmt"
+
 func main() {
 	var setting = ParseArgs()
 	setting.Print()
 
-	ParseXls(setting.input)
+	_, err := ParseXls(setting.input)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
