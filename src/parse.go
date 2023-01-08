@@ -191,29 +191,30 @@ func parseSEnum(str string) RuneTypeValue {
 	return result
 }
 
-func parseSString(str string) (RuneTypeValue, error) {
-	result := RuneTypeValue{}
-
-	result.typeName.kind = EString
-
-	str_array := parseTypeString(str)
-	if len(str_array) > 1 {
-	}
-
-	return result, nil
+func parseSString(str string) RuneTypeValue {
+	return parseTypeValue(str, EString)
 }
 
-func parseSInt(str string) {
+func parseSInt(str string) RuneTypeValue {
+	return parseTypeValue(str, EInt)
 }
 
-func parseSFloat(str string) {
+func parseSFloat(str string) RuneTypeValue {
+	return parseTypeValue(str, EFloat)
 }
 
 func isComment(str string) bool {
 	return strings.Contains(str, SComment)
 }
 
-func strToSType(str string) {
+func parseTypeValue(str string, t ERuneType) RuneTypeValue {
+	result := RuneTypeValue{}
+	result.typeName.kind = t
+
+	strs := parseTypeString(str)
+	result.typeName.value = strs[0]
+
+	return result
 }
 
 func parseTypeString(str string) []string {
