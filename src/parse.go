@@ -141,6 +141,7 @@ func ParseXls(path string) (RuneTypeBook, error) {
 	}
 
 	name := strings.Split(filepath.Base(path), ".")[0]
+	gctx.runeBook = RuneTypeBook{}
 	gctx.runeBook.name = name
 
 	sheets := file.GetSheetList()
@@ -154,9 +155,6 @@ func ParseXls(path string) (RuneTypeBook, error) {
 
 		gctx.rowIndex = 0
 
-		if len(gctx.currentSheet.tables) > 0 {
-			gctx.runeBook.sheets = append(gctx.runeBook.sheets, gctx.currentSheet)
-		}
 		gctx.currentSheet = RuneTypeSheet{}
 		gctx.currentSheet.name = name
 		for rows.Next() {
@@ -171,14 +169,20 @@ func ParseXls(path string) (RuneTypeBook, error) {
 			}
 			gctx.rowIndex++
 		}
+
+		fmt.Printf("sheet_table_num:%d\n", len(gctx.currentSheet.tables))
+		for _, t := range gctx.currentSheet.tables {
+			t.Print()
+		}
+		if len(gctx.currentSheet.tables) > 0 {
+			gctx.runeBook.sheets = append(gctx.runeBook.sheets, gctx.currentSheet)
+		}
 	}
 
 	return gctx.runeBook, nil
 }
 
 func parseCols(cols []string) error {
-	gctx.colIndex = 0
-
 	switch gctx.currentType {
 	case ContextNone:
 		return parseColsForNone(cols)
@@ -194,6 +198,7 @@ func parseColsForNone(cols []string) error {
 		return nil
 	}
 
+	gctx.colIndex = 0
 	col := cols[0]
 	if col == SRuneType {
 		err := newCurrentTable(cols)
@@ -208,6 +213,8 @@ func parseColsForNone(cols []string) error {
 
 func parseColsForTable(cols []string) error {
 	current_table := gctx.currentTable
+
+	gctx.colIndex = 0
 	for i, col := range cols {
 		index := current_table.FindTypeValueFromColIndex(i)
 		if index < 0 {
@@ -216,15 +223,14 @@ func parseColsForTable(cols []string) error {
 
 		type_value := current_table.values[index]
 		type_value.valueArray = append(type_value.valueArray, col)
+
+		gctx.colIndex++
 	}
 
 	return nil
 }
 
 func newCurrentTable(cols []string) error {
-	if len(gctx.currentTable.values) > 0 {
-		gctx.currentSheet.tables = append(gctx.currentSheet.tables, gctx.currentTable)
-	}
 	gctx.currentTable = RuneTypeTable{}
 	gctx.colIndex = 0
 	for _, col := range cols {
@@ -241,7 +247,7 @@ func newCurrentTable(cols []string) error {
 			}
 
 			if strings.Contains(value, SType) {
-				parseSType(col)
+				err = parseSType(col)
 			} else if strings.Contains(value, SString) {
 				parseSString(col)
 			} else if strings.Contains(value, SInt) {
@@ -249,9 +255,17 @@ func newCurrentTable(cols []string) error {
 			} else if strings.Contains(value, SFloat) {
 				parseSFloat(col)
 			}
+
+			if err != nil {
+				return err
+			}
 		}
 
 		gctx.colIndex++
+	}
+
+	if len(gctx.currentTable.values) > 0 {
+		gctx.currentSheet.tables = append(gctx.currentSheet.tables, gctx.currentTable)
 	}
 
 	return nil
@@ -335,5 +349,10 @@ func parseTypeValue(str string, t ERuneType) RuneTypeValue {
 
 func parseTypeString(str string) []string {
 	str = strings.Trim(str, " ")
-	return strings.Split(str, ":")
+	strs := strings.Split(str, ":")
+	for i, s := range strs {
+		strs[i] = strings.Trim(s, " ")
+	}
+
+	return strs
 }
