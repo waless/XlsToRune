@@ -39,6 +39,7 @@ func ParseArgs() SettingParam {
 }
 
 func (c *SettingParam) Print() {
+	fmt.Println("----Setting----")
 	fmt.Println(c.input)
 	fmt.Println(*c.pout)
 }

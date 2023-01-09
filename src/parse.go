@@ -28,9 +28,30 @@ const (
 	SComment  = "#"
 )
 
+func (c *ERuneType) ToString() string {
+	switch *c {
+	case EType:
+		return SType
+	case EEnum:
+		return SEnum
+	case EString:
+		return SString
+	case EInt:
+		return SInt
+	}
+
+	return ""
+}
+
 type RuneTypeName struct {
 	kind  ERuneType
 	value string
+}
+
+func (c *RuneTypeName) Print() {
+	fmt.Println("--- RuneTypeName ---")
+	fmt.Printf("kind  : %s\n", c.kind.ToString())
+	fmt.Printf("value : %s\n", c.value)
 }
 
 type RuneTypeValue struct {
@@ -39,12 +60,27 @@ type RuneTypeValue struct {
 	colIndex   int
 }
 
+func (c *RuneTypeValue) Print() {
+	fmt.Println("--- RuneTypeValue ---")
+	fmt.Printf("col_index   : %d\n", c.colIndex)
+	fmt.Printf("value_array : %s\n", c.valueArray)
+	c.typeName.Print()
+}
+
 type RuneTypeTable struct {
 	name   string
 	values []RuneTypeValue
 }
 
-func (c *RuneTypeTable) findTypeValueFromColIndex(col_index int) int {
+func (c *RuneTypeTable) Print() {
+	fmt.Println("--- RuneTypeTable ---")
+	fmt.Printf("name : %s\n", c.name)
+	for _, v := range c.values {
+		v.Print()
+	}
+}
+
+func (c *RuneTypeTable) FindTypeValueFromColIndex(col_index int) int {
 	for i, v := range c.values {
 		if v.colIndex == col_index {
 			return i
@@ -59,9 +95,25 @@ type RuneTypeSheet struct {
 	tables []RuneTypeTable
 }
 
+func (c *RuneTypeSheet) Print() {
+	fmt.Println("--- RuneTypeSheet ---")
+	fmt.Printf("name : %s\n", c.name)
+	for _, v := range c.tables {
+		v.Print()
+	}
+}
+
 type RuneTypeBook struct {
 	name   string
 	sheets []RuneTypeSheet
+}
+
+func (c *RuneTypeBook) Print() {
+	fmt.Println("--- RuneTypeBook ---")
+	fmt.Printf("name : %s\n", c.name)
+	for _, v := range c.sheets {
+		v.Print()
+	}
 }
 
 type contextType int
@@ -157,7 +209,7 @@ func parseColsForNone(cols []string) error {
 func parseColsForTable(cols []string) error {
 	current_table := gctx.currentTable
 	for i, col := range cols {
-		index := current_table.findTypeValueFromColIndex(i)
+		index := current_table.FindTypeValueFromColIndex(i)
 		if index < 0 {
 			continue
 		}
