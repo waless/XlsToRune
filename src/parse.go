@@ -65,6 +65,7 @@ type RuneTypeValue struct {
 func (c *RuneTypeValue) Print() {
 	fmt.Println("--- RuneTypeValue ---")
 	fmt.Printf("col_index   : %d\n", c.colIndex)
+	fmt.Printf("value_num   : %d\n", len(c.valueArray))
 	fmt.Printf("value_array : %s\n", c.valueArray)
 	c.typeName.Print()
 }
@@ -222,8 +223,12 @@ func parseColsForTable(cols []string) error {
 
 	begin_index := current_table.values[0].colIndex
 	end_index := current_table.values[value_len-1].colIndex
-	for i := begin_index; i < end_index; i++ {
-		fmt.Println(i)
+
+	if end_index >= col_len {
+		end_index = col_len - 1
+	}
+
+	for i := begin_index; i <= end_index; i++ {
 		col := cols[i]
 
 		index := current_table.FindTypeValueFromColIndex(i)
