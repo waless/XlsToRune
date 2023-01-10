@@ -38,6 +38,8 @@ func (c *ERuneType) ToString() string {
 		return SString
 	case EInt:
 		return SInt
+	case EFloat:
+		return SFloat
 	}
 
 	return ""
