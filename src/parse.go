@@ -74,7 +74,8 @@ type RuneTypeTable struct {
 
 func (c *RuneTypeTable) Print() {
 	fmt.Println("--- RuneTypeTable ---")
-	fmt.Printf("name : %s\n", c.name)
+	fmt.Printf("name        : %s\n", c.name)
+	fmt.Printf("value count : %d\n", len(c.values))
 	for _, v := range c.values {
 		v.Print()
 	}
@@ -170,10 +171,6 @@ func ParseXls(path string) (RuneTypeBook, error) {
 			gctx.rowIndex++
 		}
 
-		fmt.Printf("sheet_table_num:%d\n", len(gctx.currentSheet.tables))
-		for _, t := range gctx.currentSheet.tables {
-			t.Print()
-		}
 		if len(gctx.currentSheet.tables) > 0 {
 			gctx.runeBook.sheets = append(gctx.runeBook.sheets, gctx.currentSheet)
 		}
@@ -212,16 +209,27 @@ func parseColsForNone(cols []string) error {
 }
 
 func parseColsForTable(cols []string) error {
-	current_table := gctx.currentTable
+	current_table := &gctx.currentTable
+	col_len := len(cols)
+	value_len := len(current_table.values)
+	if value_len <= 0 || col_len <= 0 {
+		return nil
+	}
 
 	gctx.colIndex = 0
-	for i, col := range cols {
+
+	begin_index := current_table.values[0].colIndex
+	end_index := current_table.values[value_len-1].colIndex
+	for i := begin_index; i < end_index; i++ {
+		fmt.Println(i)
+		col := cols[i]
+
 		index := current_table.FindTypeValueFromColIndex(i)
 		if index < 0 {
 			continue
 		}
 
-		type_value := current_table.values[index]
+		type_value := &current_table.values[index]
 		type_value.valueArray = append(type_value.valueArray, col)
 
 		gctx.colIndex++
@@ -233,13 +241,15 @@ func parseColsForTable(cols []string) error {
 func newCurrentTable(cols []string) error {
 	gctx.currentTable = RuneTypeTable{}
 	gctx.colIndex = 0
+
+	current_table := &gctx.currentTable
 	for _, col := range cols {
 		value := strings.Trim(col, " ")
 
 		if isComment(value) {
 		} else if strings.Contains(value, SEnum) {
 			v := parseSEnum(col)
-			gctx.currentTable.values = append(gctx.currentTable.values, v)
+			current_table.values = append(current_table.values, v)
 		} else {
 			err := checkTypeValidity(value)
 			if err != nil {
@@ -249,11 +259,14 @@ func newCurrentTable(cols []string) error {
 			if strings.Contains(value, SType) {
 				err = parseSType(col)
 			} else if strings.Contains(value, SString) {
-				parseSString(col)
+				v := parseSString(col)
+				current_table.values = append(current_table.values, v)
 			} else if strings.Contains(value, SInt) {
-				parseSInt(col)
+				v := parseSInt(col)
+				current_table.values = append(current_table.values, v)
 			} else if strings.Contains(value, SFloat) {
-				parseSFloat(col)
+				v := parseSFloat(col)
+				current_table.values = append(current_table.values, v)
 			}
 
 			if err != nil {
@@ -315,7 +328,8 @@ func parseSType(str string) error {
 
 func parseSEnum(str string) RuneTypeValue {
 	result := RuneTypeValue{}
-	result.typeName.kind = EType
+	result.typeName.kind = EEnum
+	result.colIndex = gctx.colIndex
 
 	return result
 }
