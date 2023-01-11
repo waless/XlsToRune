@@ -242,6 +242,17 @@ func parseColsForTable(cols []string) error {
 		gctx.colIndex++
 	}
 
+	value_count := end_index - begin_index
+	blank_count := value_len - value_count - 1
+	blank_begin_index := end_index + 1
+	blank_end_index := blank_begin_index + blank_count - 1
+
+	for i := blank_begin_index; i <= blank_end_index; i++ {
+		index := current_table.FindTypeValueFromColIndex(i)
+		type_value := &current_table.values[index]
+		type_value.valueArray = append(type_value.valueArray, " ")
+	}
+
 	return nil
 }
 

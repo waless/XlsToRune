@@ -6,6 +6,7 @@ func main() {
 	var setting = ParseArgs()
 	setting.Print()
 
+	//_, err := ParseXls(setting.input)
 	book, err := ParseXls(setting.input)
 	if err != nil {
 		fmt.Println(err)
