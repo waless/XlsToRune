@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 func main() {
 	var setting = ParseArgs()
@@ -11,6 +14,9 @@ func main() {
 		fmt.Println(err)
 	}
 
-	json := RuneBookToJson(book)
-	fmt.Println(json)
+	json, err := json.Marshal(book)
+	fmt.Printf("%s", json)
+
+	//json := RuneBookToJson(book)
+	//[fmt.Println(json)
 }

@@ -46,28 +46,28 @@ func (c *ERuneType) ToString() string {
 }
 
 type RuneTypeName struct {
-	kind  ERuneType
-	value string
+	Kind  ERuneType
+	Value string
 }
 
 func (c *RuneTypeName) Print() {
 	fmt.Println("--- RuneTypeName ---")
-	fmt.Printf("kind  : %s\n", c.kind.ToString())
-	fmt.Printf("value : %s\n", c.value)
+	fmt.Printf("kind  : %s\n", c.Kind.ToString())
+	fmt.Printf("value : %s\n", c.Value)
 }
 
 type RuneTypeValue struct {
-	typeName   RuneTypeName
-	valueArray []string
-	colIndex   int
+	TypeName   RuneTypeName
+	ValueArray []string
+	ColIndex   int
 }
 
 func (c *RuneTypeValue) Print() {
 	fmt.Println("--- RuneTypeValue ---")
-	fmt.Printf("col_index   : %d\n", c.colIndex)
-	fmt.Printf("value_num   : %d\n", len(c.valueArray))
-	fmt.Printf("value_array : %s\n", c.valueArray)
-	c.typeName.Print()
+	fmt.Printf("col_index   : %d\n", c.ColIndex)
+	fmt.Printf("value_num   : %d\n", len(c.ValueArray))
+	fmt.Printf("value_array : %s\n", c.ValueArray)
+	c.TypeName.Print()
 }
 
 type RuneTypeTable struct {
@@ -86,7 +86,7 @@ func (c *RuneTypeTable) Print() {
 
 func (c *RuneTypeTable) FindTypeValueFromColIndex(col_index int) int {
 	for i, v := range c.values {
-		if v.colIndex == col_index {
+		if v.ColIndex == col_index {
 			return i
 		}
 	}
@@ -108,14 +108,14 @@ func (c *RuneTypeSheet) Print() {
 }
 
 type RuneTypeBook struct {
-	name   string
-	sheets []RuneTypeSheet
+	Name   string
+	Sheets []RuneTypeSheet
 }
 
 func (c *RuneTypeBook) Print() {
 	fmt.Println("--- RuneTypeBook ---")
-	fmt.Printf("name : %s\n", c.name)
-	for _, v := range c.sheets {
+	fmt.Printf("name : %s\n", c.Name)
+	for _, v := range c.Sheets {
 		v.Print()
 	}
 }
@@ -146,7 +146,7 @@ func ParseXls(path string) (RuneTypeBook, error) {
 
 	name := strings.Split(filepath.Base(path), ".")[0]
 	gctx.runeBook = RuneTypeBook{}
-	gctx.runeBook.name = name
+	gctx.runeBook.Name = name
 
 	sheets := file.GetSheetList()
 	for i := 0; i < len(sheets); i++ {
@@ -175,7 +175,7 @@ func ParseXls(path string) (RuneTypeBook, error) {
 		}
 
 		if len(gctx.currentSheet.tables) > 0 {
-			gctx.runeBook.sheets = append(gctx.runeBook.sheets, gctx.currentSheet)
+			gctx.runeBook.Sheets = append(gctx.runeBook.Sheets, gctx.currentSheet)
 		}
 	}
 
@@ -221,8 +221,8 @@ func parseColsForTable(cols []string) error {
 
 	gctx.colIndex = 0
 
-	begin_index := current_table.values[0].colIndex
-	end_index := current_table.values[value_len-1].colIndex
+	begin_index := current_table.values[0].ColIndex
+	end_index := current_table.values[value_len-1].ColIndex
 
 	if end_index >= col_len {
 		end_index = col_len - 1
@@ -237,7 +237,7 @@ func parseColsForTable(cols []string) error {
 		}
 
 		type_value := &current_table.values[index]
-		type_value.valueArray = append(type_value.valueArray, col)
+		type_value.ValueArray = append(type_value.ValueArray, col)
 
 		gctx.colIndex++
 	}
@@ -250,7 +250,7 @@ func parseColsForTable(cols []string) error {
 	for i := blank_begin_index; i <= blank_end_index; i++ {
 		index := current_table.FindTypeValueFromColIndex(i)
 		type_value := &current_table.values[index]
-		type_value.valueArray = append(type_value.valueArray, " ")
+		type_value.ValueArray = append(type_value.ValueArray, " ")
 	}
 
 	return nil
@@ -346,8 +346,8 @@ func parseSType(str string) error {
 
 func parseSEnum(str string) RuneTypeValue {
 	result := RuneTypeValue{}
-	result.typeName.kind = EEnum
-	result.colIndex = gctx.colIndex
+	result.TypeName.Kind = EEnum
+	result.ColIndex = gctx.colIndex
 
 	return result
 }
@@ -370,11 +370,11 @@ func isComment(str string) bool {
 
 func parseTypeValue(str string, t ERuneType) RuneTypeValue {
 	result := RuneTypeValue{}
-	result.typeName.kind = t
+	result.TypeName.Kind = t
 
 	strs := parseTypeString(str)
-	result.typeName.value = strs[0]
-	result.colIndex = gctx.colIndex
+	result.TypeName.Value = strs[0]
+	result.ColIndex = gctx.colIndex
 
 	return result
 }
