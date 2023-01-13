@@ -15,7 +15,7 @@ func toBookJson(book RuneTypeBook) string {
 
 func toSheetJson(sheet RuneTypeSheet) string {
 	result := ""
-	for _, table := range sheet.tables {
+	for _, table := range sheet.Tables {
 		result += toTableJson(table)
 	}
 

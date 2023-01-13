@@ -3,20 +3,42 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 )
 
 func main() {
+	err := mainImpl()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func mainImpl() error {
 	var setting = ParseArgs()
 	setting.Print()
 
 	book, err := ParseXls(setting.input)
 	if err != nil {
-		fmt.Println(err)
+		return err
+	}
+	//book.Print()
+
+	json_data, err := json.MarshalIndent(book, "", "  ")
+	if err != nil {
+		return err
 	}
 
-	json, err := json.Marshal(book)
-	fmt.Printf("%s", json)
+	file, err := os.Create(*setting.pout)
+	if err != nil {
+		return err
+	}
 
-	//json := RuneBookToJson(book)
-	//[fmt.Println(json)
+	n, err := file.Write(json_data)
+	if err != nil {
+		return err
+	}
+	//fmt.Println(string(json_data))
+	fmt.Println(n)
+
+	return nil
 }
