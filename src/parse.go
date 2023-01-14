@@ -8,16 +8,6 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-type ERuneType int
-
-const (
-	EType ERuneType = iota
-	EEnum
-	EInt
-	EFloat
-	EString
-)
-
 const (
 	SRuneType = "RuneType"
 	SType     = "type"
@@ -28,31 +18,14 @@ const (
 	SComment  = "#"
 )
 
-func (c *ERuneType) ToString() string {
-	switch *c {
-	case EType:
-		return SType
-	case EEnum:
-		return SEnum
-	case EString:
-		return SString
-	case EInt:
-		return SInt
-	case EFloat:
-		return SFloat
-	}
-
-	return ""
-}
-
 type RuneTypeName struct {
-	Kind  ERuneType
+	Kind  string
 	Value string
 }
 
 func (c *RuneTypeName) Print() {
 	fmt.Println("--- RuneTypeName ---")
-	fmt.Printf("kind  : %s\n", c.Kind.ToString())
+	fmt.Printf("kind  : %s\n", c.Kind)
 	fmt.Printf("value : %s\n", c.Value)
 }
 
@@ -350,31 +323,31 @@ func parseSType(str string) error {
 
 func parseSEnum(str string) RuneTypeValue {
 	result := RuneTypeValue{}
-	result.TypeName.Kind = EEnum
+	result.TypeName.Kind = SEnum
 	result.colIndex = gctx.colIndex
 
 	return result
 }
 
 func parseSString(str string) RuneTypeValue {
-	return parseTypeValue(str, EString)
+	return parseTypeValue(str, SString)
 }
 
 func parseSInt(str string) RuneTypeValue {
-	return parseTypeValue(str, EInt)
+	return parseTypeValue(str, SInt)
 }
 
 func parseSFloat(str string) RuneTypeValue {
-	return parseTypeValue(str, EFloat)
+	return parseTypeValue(str, SFloat)
 }
 
 func isComment(str string) bool {
 	return strings.Contains(str, SComment)
 }
 
-func parseTypeValue(str string, t ERuneType) RuneTypeValue {
+func parseTypeValue(str string, type_name string) RuneTypeValue {
 	result := RuneTypeValue{}
-	result.TypeName.Kind = t
+	result.TypeName.Kind = type_name
 
 	strs := parseTypeString(str)
 	result.TypeName.Value = strs[0]
