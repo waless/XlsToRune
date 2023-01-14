@@ -238,7 +238,7 @@ func parseColsForTable(cols []string) error {
 	gctx.colIndex = 0
 
 	begin_index := current_table.typeIndex + 1
-	end_index := begin_index + type_len
+	end_index := begin_index + type_len - 1 // -1 はテーブル型名分
 	for i := begin_index; i <= end_index; i++ {
 		if current_table.IsIgnoreIndex(i) {
 			continue
