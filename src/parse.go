@@ -184,11 +184,19 @@ func ParseXls(path string) (RuneTypeBook, error) {
 }
 
 func parseCols(cols []string) error {
+	col_len := len(cols)
+
 	switch gctx.currentType {
 	case ContextNone:
 		return parseColsForNone(cols)
 	case ContextTable:
-		return parseColsForTable(cols)
+		if col_len > 0 {
+			if cols[0] == SRuneType {
+				return parseColsForNone(cols)
+			} else {
+				return parseColsForTable(cols)
+			}
+		}
 	}
 
 	return nil
@@ -207,7 +215,6 @@ func parseColsForNone(cols []string) error {
 			return err
 		}
 		gctx.currentType = ContextTable
-		fmt.Println(gctx.pcurrentTable.ignoreIndex)
 	}
 
 	return nil
@@ -217,6 +224,10 @@ func parseColsForTable(cols []string) error {
 	result := []string{}
 
 	table_len := len(gctx.currentSheet.Tables)
+	if table_len <= 0 {
+		return nil
+	}
+
 	current_table := &gctx.currentSheet.Tables[table_len-1]
 	col_len := len(cols)
 	type_len := len(current_table.Types)
