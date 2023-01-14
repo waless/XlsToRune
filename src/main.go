@@ -15,6 +15,11 @@ func main() {
 
 func mainImpl() error {
 	var setting = ParseArgs()
+
+	if setting.input == "" {
+		return fmt.Errorf("入力ファイル指定がありません")
+	}
+
 	setting.Print()
 
 	book, err := ParseXls(setting.input)

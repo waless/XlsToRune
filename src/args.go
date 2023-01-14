@@ -40,8 +40,8 @@ func ParseArgs() SettingParam {
 
 func (c *SettingParam) Print() {
 	fmt.Println("----Setting----")
-	fmt.Println(c.input)
-	fmt.Println(*c.pout)
+	fmt.Printf("input  : %s\n", c.input)
+	fmt.Printf("output : %s\n", *c.pout)
 }
 
 func makeOutputDefaultPath(input_path string) string {
