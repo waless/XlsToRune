@@ -95,16 +95,6 @@ func (c *RuneTypeTable) IsIgnoreIndex(index int) bool {
 	return false
 }
 
-//func (c *RuneTypeTable) FindTypeValueFromColIndex(col_index int) int {
-//	for i, v := range c.Values {
-//		if v.colIndex == col_index {
-//			return i
-//		}
-//	}
-//
-//	return -1
-//}
-
 type RuneTypeSheet struct {
 	Name   string
 	Tables []RuneTypeTable

@@ -21,7 +21,6 @@ func mainImpl() error {
 	if err != nil {
 		return err
 	}
-	//book.Print()
 
 	json_data, err := json.MarshalIndent(book, "", "  ")
 	if err != nil {
@@ -33,12 +32,10 @@ func mainImpl() error {
 		return err
 	}
 
-	n, err := file.Write(json_data)
+	_, err = file.Write(json_data)
 	if err != nil {
 		return err
 	}
-	//fmt.Println(string(json_data))
-	fmt.Println(n)
 
 	return nil
 }
