@@ -242,7 +242,7 @@ func newCurrentTable(cols []string) error {
 		if isComment(value) {
 			table.ignoreIndex = append(table.ignoreIndex, i)
 		} else if strings.Contains(value, SEnum) {
-			v := parseSEnum(col)
+			v := parseSEnum()
 			table.Types = append(table.Types, v)
 		} else {
 			err := checkTypeValidity(value)
@@ -321,7 +321,7 @@ func parseSType(str string) error {
 	return nil
 }
 
-func parseSEnum(str string) RuneTypeValue {
+func parseSEnum() RuneTypeValue {
 	result := RuneTypeValue{}
 	result.TypeName.Kind = SEnum
 	result.colIndex = gctx.colIndex
