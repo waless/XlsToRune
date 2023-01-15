@@ -30,11 +30,15 @@ func (c *RuneTypeName) Print() {
 }
 
 type RuneTypeValue struct {
+	Values []string
+}
+
+type RuneTypeType struct {
 	TypeName RuneTypeName
 	colIndex int
 }
 
-func (c *RuneTypeValue) Print() {
+func (c *RuneTypeType) Print() {
 	fmt.Println("--- RuneTypeValue ---")
 	fmt.Printf("col_index   : %d\n", c.colIndex)
 	c.TypeName.Print()
@@ -42,8 +46,8 @@ func (c *RuneTypeValue) Print() {
 
 type RuneTypeTable struct {
 	Name        string
-	Types       []RuneTypeValue
-	Values      [][]string
+	Types       []RuneTypeType
+	Values      []RuneTypeValue
 	typeIndex   int
 	ignoreIndex []int
 }
@@ -194,7 +198,7 @@ func parseColsForNone(cols []string) error {
 }
 
 func parseColsForTable(cols []string) error {
-	result := []string{}
+	result := RuneTypeValue{}
 
 	table_len := len(gctx.currentSheet.Tables)
 	if table_len <= 0 {
@@ -219,9 +223,9 @@ func parseColsForTable(cols []string) error {
 
 		if i < col_len {
 			col := cols[i]
-			result = append(result, col)
+			result.Values = append(result.Values, col)
 		} else {
-			result = append(result, " ")
+			result.Values = append(result.Values, " ")
 		}
 
 		gctx.colIndex++
@@ -321,23 +325,23 @@ func parseSType(str string) error {
 	return nil
 }
 
-func parseSEnum() RuneTypeValue {
-	result := RuneTypeValue{}
+func parseSEnum() RuneTypeType {
+	result := RuneTypeType{}
 	result.TypeName.Kind = SEnum
 	result.colIndex = gctx.colIndex
 
 	return result
 }
 
-func parseSString(str string) RuneTypeValue {
+func parseSString(str string) RuneTypeType {
 	return parseTypeValue(str, SString)
 }
 
-func parseSInt(str string) RuneTypeValue {
+func parseSInt(str string) RuneTypeType {
 	return parseTypeValue(str, SInt)
 }
 
-func parseSFloat(str string) RuneTypeValue {
+func parseSFloat(str string) RuneTypeType {
 	return parseTypeValue(str, SFloat)
 }
 
@@ -345,8 +349,8 @@ func isComment(str string) bool {
 	return strings.Contains(str, SComment)
 }
 
-func parseTypeValue(str string, type_name string) RuneTypeValue {
-	result := RuneTypeValue{}
+func parseTypeValue(str string, type_name string) RuneTypeType {
+	result := RuneTypeType{}
 	result.TypeName.Kind = type_name
 
 	strs := parseTypeString(str)
