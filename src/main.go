@@ -16,13 +16,13 @@ func main() {
 func mainImpl() error {
 	var setting = ParseArgs()
 
-	if setting.input == "" {
+	if *setting.pinput == "" {
 		return fmt.Errorf("入力ファイル指定がありません")
 	}
 
 	setting.Print()
 
-	book, err := ParseXls(setting.input)
+	book, err := ParseXls(*setting.pinput)
 	if err != nil {
 		return err
 	}
@@ -43,6 +43,11 @@ func mainImpl() error {
 	}
 
 	err = OutputClassString(book, *setting.poutClass)
+	if err != nil {
+		return err
+	}
+
+	err = OutputEnum(book, *setting.penumNS, *setting.poutEnum)
 	if err != nil {
 		return err
 	}

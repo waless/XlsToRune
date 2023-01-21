@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	"path"
 	"strings"
 )
@@ -14,39 +13,50 @@ import (
 const RuneExt = ".rune"
 
 type SettingParam struct {
-	input     string
+	pinput    *string
 	pout      *string
 	poutClass *string
+	poutEnum  *string
+	penumNS   *string
 }
 
 func ParseArgs() SettingParam {
 	var result SettingParam
 
-	// 入力ファイルパス(必須)
-	// 先頭に引数名なしで書かれている事を意図している
-	var in = ""
-	if len(os.Args) > 1 {
-		in = os.Args[1]
-	}
-	result.input = in
+	result.pinput = flag.String("in", "", "入力ファイルパス")
 
 	// 補助引数(なくても良い)
-	var out_default = makeOutputDefaultPath(in)
-	result.pout = flag.String("o", out_default, "出力ファイルパス")
+	result.pout = flag.String("o", "", "出力ファイルパス")
 
-	var out_dir = path.Dir(out_default)
-	result.poutClass = flag.String("class", out_dir, "クラス出力ディレクトリ")
+	result.poutClass = flag.String("class", "", "クラス出力ディレクトリ")
+	result.poutEnum = flag.String("enum", "", "enum出力ディレクトリ")
+	result.penumNS = flag.String("enum-namespace", "", "enumのnamespace")
 
 	flag.Parse()
+
+	out_default := makeOutputDefaultPath(*result.pinput)
+	out_dir := path.Dir(out_default)
+
+	if len(*result.pout) <= 0 {
+		*result.pout = out_default
+	}
+	if len(*result.poutClass) <= 0 {
+		*result.poutClass = out_dir
+	}
+	if len(*result.poutEnum) <= 0 {
+		*result.poutEnum = out_dir
+	}
 
 	return result
 }
 
 func (c *SettingParam) Print() {
 	fmt.Println("----Setting----")
-	fmt.Printf("input  : %s\n", c.input)
-	fmt.Printf("output : %s\n", *c.pout)
-	fmt.Printf("class  : %s\n", *c.poutClass)
+	fmt.Printf("input          : %s\n", *c.pinput)
+	fmt.Printf("output         : %s\n", *c.pout)
+	fmt.Printf("class          : %s\n", *c.poutClass)
+	fmt.Printf("enum           : %s\n", *c.poutEnum)
+	fmt.Printf("enum-namespace : %s\n", *c.penumNS)
 }
 
 func makeOutputDefaultPath(input_path string) string {
