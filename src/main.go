@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path"
 )
 
 func main() {
@@ -28,6 +29,11 @@ func mainImpl() error {
 	}
 
 	json_data, err := json.MarshalIndent(book, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	err = os.MkdirAll(path.Dir(*setting.pout), os.ModePerm)
 	if err != nil {
 		return err
 	}

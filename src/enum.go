@@ -51,6 +51,11 @@ func outputEnumFromTable(table RuneTypeTable, enum_ns string, out_dir string) er
 		enum_str += "}\n"
 	}
 
+	err := os.MkdirAll(out_dir, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
 	file, err := os.Create(path)
 	if err != nil {
 		return err

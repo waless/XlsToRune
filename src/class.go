@@ -47,6 +47,11 @@ func outputTable(table RuneTypeTable, out_dir string) error {
 func write(class_name string, class_str string, out_dir string) error {
 	path := out_dir + "/" + class_name + ".cs"
 
+	err := os.MkdirAll(out_dir, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
 	file, err := os.Create(path)
 	if err != nil {
 		return err
