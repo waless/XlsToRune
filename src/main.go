@@ -42,5 +42,10 @@ func mainImpl() error {
 		return err
 	}
 
+	err = OutputClassString(book, *setting.poutClass)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -14,8 +14,9 @@ import (
 const RuneExt = ".rune"
 
 type SettingParam struct {
-	input string
-	pout  *string
+	input     string
+	pout      *string
+	poutClass *string
 }
 
 func ParseArgs() SettingParam {
@@ -33,6 +34,9 @@ func ParseArgs() SettingParam {
 	var out_default = makeOutputDefaultPath(in)
 	result.pout = flag.String("o", out_default, "出力ファイルパス")
 
+	var out_dir = path.Dir(out_default)
+	result.poutClass = flag.String("class", out_dir, "クラス出力ディレクトリ")
+
 	flag.Parse()
 
 	return result
@@ -42,6 +46,7 @@ func (c *SettingParam) Print() {
 	fmt.Println("----Setting----")
 	fmt.Printf("input  : %s\n", c.input)
 	fmt.Printf("output : %s\n", *c.pout)
+	fmt.Printf("class  : %s\n", *c.poutClass)
 }
 
 func makeOutputDefaultPath(input_path string) string {
