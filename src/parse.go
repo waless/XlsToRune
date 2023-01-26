@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/xuri/excelize/v2"
@@ -222,8 +223,24 @@ func parseColsForTable(cols []string) error {
 		}
 
 		if i < col_len {
+			col_type := current_table.Types[i-2]
 			col := cols[i]
 			col = strings.TrimSpace(col)
+
+			switch col_type.TypeName.Kind {
+			case SInt:
+				_, err := strconv.Atoi(col)
+				if err != nil {
+					return fmt.Errorf("値:%s は整数ではありません", col)
+				}
+
+			case SFloat:
+				_, err := strconv.ParseFloat(col, 32)
+				if err != nil {
+					return fmt.Errorf("値:%s は浮動小数ではありません", col)
+				}
+			}
+
 			result.Values = append(result.Values, col)
 		} else {
 			result.Values = append(result.Values, "")

@@ -1,6 +1,9 @@
 package main
 
-import "os"
+import (
+	"os"
+	"strconv"
+)
 
 func OutputClassString(book RuneTypeBook, out_dir string) error {
 	for _, sheet := range book.Sheets {
@@ -26,11 +29,10 @@ func outputSheet(sheet RuneTypeSheet, out_dir string) error {
 
 func outputTable(table RuneTypeTable, out_dir string) error {
 	class_str := "using System;\n"
-	class_str += "using System.Collections.Generic;\n"
 	class_str += "using UnityEngine;\n"
 	class_str += "using RuneImporter;\n"
 	class_str += "\n"
-	class_str += addRuneClassName(table.Name)
+	class_str += addRuneClassName(table.Name, len(table.Values))
 
 	for _, t := range table.Types {
 		switch t.TypeName.Kind {
@@ -71,11 +73,11 @@ func write(class_name string, class_str string, out_dir string) error {
 	return nil
 }
 
-func addRuneClassName(type_name string) string {
+func addRuneClassName(type_name string, value_length int) string {
 	str := "public class " + "Rune_" + type_name + " : RuneScriptableObject\n"
 	str += "{\n"
 	str += "    [SerializeField]\n"
-	str += "    public List<Value> ValueList = new List<Value>();\n"
+	str += "    public Value[] ValueList = new Value[" + strconv.Itoa(value_length) + "];\n"
 	str += "\n"
 	str += "    [Serializable]\n"
 	str += "    public struct Value\n"
