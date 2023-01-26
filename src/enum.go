@@ -44,6 +44,9 @@ func outputEnumFromTable(table RuneTypeTable, enum_ns string, out_dir string) er
 		enum_str += "    " + element_name + ",\n"
 	}
 
+	enum_str += "\n"
+	enum_str += "    Count,\n"
+
 	enum_str += "}\n"
 
 	if len(enum_ns) > 0 {
