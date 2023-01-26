@@ -223,9 +223,10 @@ func parseColsForTable(cols []string) error {
 
 		if i < col_len {
 			col := cols[i]
+			col = strings.TrimSpace(col)
 			result.Values = append(result.Values, col)
 		} else {
-			result.Values = append(result.Values, " ")
+			result.Values = append(result.Values, "")
 		}
 
 		gctx.colIndex++
