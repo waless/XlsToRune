@@ -46,7 +46,8 @@ func outputTable(table RuneTypeTable, out_dir string) error {
 	class_str += "    }\n"
 	class_str += "}\n"
 
-	return write(table.Name, class_str, out_dir)
+	file_name := "Rune_" + table.Name
+	return write(file_name, class_str, out_dir)
 }
 
 func write(class_name string, class_str string, out_dir string) error {
