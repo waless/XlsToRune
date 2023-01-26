@@ -25,7 +25,10 @@ func outputSheet(sheet RuneTypeSheet, out_dir string) error {
 }
 
 func outputTable(table RuneTypeTable, out_dir string) error {
-	class_str := "using UnityEngine;\n"
+	class_str := "using System;\n"
+	class_str += "using System.Collections.Generic;\n"
+	class_str += "using UnityEngine;\n"
+	class_str += "using RuneImporter;\n"
 	class_str += "\n"
 	class_str += addRuneClassName(table.Name)
 
@@ -40,7 +43,9 @@ func outputTable(table RuneTypeTable, out_dir string) error {
 		}
 	}
 
+	class_str += "    }\n"
 	class_str += "}\n"
+
 	return write(table.Name, class_str, out_dir)
 }
 
@@ -66,20 +71,26 @@ func write(class_name string, class_str string, out_dir string) error {
 }
 
 func addRuneClassName(type_name string) string {
-	str := "public class " + type_name + " : RuneScriptableObject\n"
+	str := "public class " + "Rune_" + type_name + " : RuneScriptableObject\n"
 	str += "{\n"
+	str += "    [SerializeField]\n"
+	str += "    public List<Value> ValueList = new List<Value>();\n"
+	str += "\n"
+	str += "    [Serializable]\n"
+	str += "    public struct Value\n"
+	str += "    {\n"
 
 	return str
 }
 
 func addRuneString(type_name RuneTypeName) string {
-	return "    public string " + type_name.Value + ";\n"
+	return "        public string " + type_name.Value + ";\n"
 }
 
 func addRuneInteger(type_name RuneTypeName) string {
-	return "    public int " + type_name.Value + ";\n"
+	return "        public int " + type_name.Value + ";\n"
 }
 
 func addRuneFloat(type_name RuneTypeName) string {
-	return "    public float " + type_name.Value + ";\n"
+	return "        public float " + type_name.Value + ";\n"
 }
