@@ -28,11 +28,15 @@ func outputSheet(sheet RuneTypeSheet, out_dir string) error {
 }
 
 func outputTable(table RuneTypeTable, out_dir string) error {
+	class_name := "Rune_" + table.Name
+
 	class_str := "using System;\n"
 	class_str += "using UnityEngine;\n"
+	class_str += "using UnityEngine.AddressableAssets;\n"
+	class_str += "using UnityEngine.ResourceManagement.AsyncOperations;\n"
 	class_str += "using RuneImporter;\n"
 	class_str += "\n"
-	class_str += addRuneClassName(table.Name, len(table.Values))
+	class_str += addRuneClassName(class_name, len(table.Values))
 
 	for _, t := range table.Types {
 		switch t.TypeName.Kind {
@@ -46,6 +50,16 @@ func outputTable(table RuneTypeTable, out_dir string) error {
 	}
 
 	class_str += "    }\n"
+
+	class_str += "\n"
+	class_str += "    public static AsyncOperationHandle<" + class_name + "> LoadInstanceAsync() {\n"
+	class_str += "        var path = Config.ScriptableObjectDirectory + \"" + class_name + ".asset\";\n"
+	class_str += "        var handle = Addressables.LoadAssetAsync<" + class_name + ">(path);\n"
+	class_str += "        handle.Completed += (handle) => { instance = handle.Result; };\n"
+	class_str += "\n"
+	class_str += "        return handle;\n"
+	class_str += "    }\n"
+
 	class_str += "}\n"
 
 	file_name := "Rune_" + table.Name
@@ -74,8 +88,10 @@ func write(class_name string, class_str string, out_dir string) error {
 }
 
 func addRuneClassName(type_name string, value_length int) string {
-	str := "public class " + "Rune_" + type_name + " : RuneScriptableObject\n"
+	str := "public class " + type_name + " : RuneScriptableObject\n"
 	str += "{\n"
+	str += "    public static " + type_name + " instance { get; private set; }\n"
+	str += "\n"
 	str += "    [SerializeField]\n"
 	str += "    public Value[] ValueList = new Value[" + strconv.Itoa(value_length) + "];\n"
 	str += "\n"
