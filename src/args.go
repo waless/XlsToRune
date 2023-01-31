@@ -23,7 +23,7 @@ type SettingParam struct {
 func ParseArgs() SettingParam {
 	var result SettingParam
 
-	result.pinput = flag.String("in", "", "入力ファイルパス")
+	result.pinput = flag.String("i", "", "入力ファイルパス")
 
 	// 補助引数(なくても良い)
 	result.pout = flag.String("o", "", "出力ファイルパス")
