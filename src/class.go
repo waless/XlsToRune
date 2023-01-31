@@ -36,6 +36,19 @@ func outputTable(table RuneTypeTable, out_dir string) error {
 	class_str += "using UnityEngine.ResourceManagement.AsyncOperations;\n"
 	class_str += "using RuneImporter;\n"
 	class_str += "\n"
+
+	class_str += "namespace RuneImporter\n"
+	class_str += "{\n"
+	class_str += "    public static partial class RuneLoader\n"
+	class_str += "    {\n"
+	class_str += "        public static AsyncOperationHandle " + class_name + "_LoadInstanceAsync()\n"
+	class_str += "        {\n"
+	class_str += "            return " + class_name + ".LoadInstanceAsync();\n"
+	class_str += "        }\n"
+	class_str += "    }\n"
+	class_str += "}\n"
+	class_str += "\n"
+
 	class_str += addRuneClassName(class_name, len(table.Values))
 
 	for _, t := range table.Types {
