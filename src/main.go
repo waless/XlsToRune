@@ -7,6 +7,17 @@ import (
 	"path"
 )
 
+const ToolVersion string = "1.00"
+
+type RuneTypeInfo struct {
+	ToolVersion string
+}
+
+type RuneTypeJson struct {
+	Info RuneTypeInfo
+	Book RuneTypeBook
+}
+
 func main() {
 	err := mainImpl()
 	if err != nil {
@@ -28,7 +39,11 @@ func mainImpl() error {
 		return err
 	}
 
-	json_data, err := json.MarshalIndent(book, "", "  ")
+	output_json := RuneTypeJson{}
+	output_json.Book = book
+	output_json.Info.ToolVersion = ToolVersion
+
+	json_data, err := json.MarshalIndent(output_json, "", "  ")
 	if err != nil {
 		return err
 	}
