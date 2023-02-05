@@ -65,10 +65,10 @@ func outputTable(table RuneTypeTable, out_dir string) error {
 	class_str += "    }\n"
 
 	class_str += "\n"
-	class_str += "    public static AsyncOperationHandle<" + class_name + "> LoadInstanceAsync() {\n"
+	class_str += "    public static AsyncOperationHandle LoadInstanceAsync() {\n"
 	class_str += "        var path = Config.ScriptableObjectDirectory + \"" + table.Name + ".asset\";\n"
-	class_str += "        var handle = Addressables.LoadAssetAsync<" + class_name + ">(path);\n"
-	class_str += "        handle.Completed += (handle) => { instance = handle.Result; };\n"
+	class_str += "        var handle = Config.OnLoad(path);\n"
+	class_str += "        handle.Completed += (handle) => { instance = handle.Result as " + class_name + "; };\n"
 	class_str += "\n"
 	class_str += "        return handle;\n"
 	class_str += "    }\n"

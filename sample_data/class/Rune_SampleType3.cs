@@ -28,10 +28,10 @@ public class Rune_SampleType3 : RuneScriptableObject
         public string name;
     }
 
-    public static AsyncOperationHandle<Rune_SampleType3> LoadInstanceAsync() {
+    public static AsyncOperationHandle LoadInstanceAsync() {
         var path = Config.ScriptableObjectDirectory + "SampleType3.asset";
-        var handle = Addressables.LoadAssetAsync<Rune_SampleType3>(path);
-        handle.Completed += (handle) => { instance = handle.Result; };
+        var handle = Config.OnLoad(path);
+        handle.Completed += (handle) => { instance = handle.Result as Rune_SampleType3; };
 
         return handle;
     }

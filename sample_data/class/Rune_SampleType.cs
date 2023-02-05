@@ -30,10 +30,10 @@ public class Rune_SampleType : RuneScriptableObject
         public float position;
     }
 
-    public static AsyncOperationHandle<Rune_SampleType> LoadInstanceAsync() {
+    public static AsyncOperationHandle LoadInstanceAsync() {
         var path = Config.ScriptableObjectDirectory + "SampleType.asset";
-        var handle = Addressables.LoadAssetAsync<Rune_SampleType>(path);
-        handle.Completed += (handle) => { instance = handle.Result; };
+        var handle = Config.OnLoad(path);
+        handle.Completed += (handle) => { instance = handle.Result as Rune_SampleType; };
 
         return handle;
     }

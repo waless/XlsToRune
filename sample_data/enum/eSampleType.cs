@@ -1,3 +1,6 @@
+namespace RuneEnum
+{
+
 public enum eSampleType
 {
     Foo,
@@ -6,4 +9,6 @@ public enum eSampleType
     n,
 
     Count,
+}
+
 }
