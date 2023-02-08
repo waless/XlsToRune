@@ -16,8 +16,15 @@ const (
 	SString   = "string"
 	SInt      = "int"
 	SFloat    = "float"
+	SVector2  = "vector2"
+	SVector3  = "vector3"
+	SVector4  = "vector4"
+	SSize2    = "size2"
+	SSize3    = "size3"
 	SComment  = "#"
 )
+
+const value_separator = ","
 
 type RuneTypeName struct {
 	Kind  string
@@ -239,6 +246,17 @@ func parseColsForTable(cols []string) error {
 				if err != nil {
 					return fmt.Errorf("値:%s は浮動小数ではありません", col)
 				}
+
+			case SVector2:
+				break
+			case SVector3:
+				break
+			case SVector4:
+				break
+			case SSize2:
+				break
+			case SSize3:
+				break
 			}
 
 			result.Values = append(result.Values, col)
@@ -283,6 +301,21 @@ func newCurrentTable(cols []string) error {
 				table.Types = append(table.Types, v)
 			} else if strings.Contains(value, SFloat) {
 				v := parseSFloat(col)
+				table.Types = append(table.Types, v)
+			} else if strings.Contains(value, SVector2) {
+				v := parseSVector2(col)
+				table.Types = append(table.Types, v)
+			} else if strings.Contains(value, SVector3) {
+				v := parseSVector3(col)
+				table.Types = append(table.Types, v)
+			} else if strings.Contains(value, SVector4) {
+				v := parseSVector4(col)
+				table.Types = append(table.Types, v)
+			} else if strings.Contains(value, SSize2) {
+				v := parseSSize2(col)
+				table.Types = append(table.Types, v)
+			} else if strings.Contains(value, SSize3) {
+				v := parseSSize3(col)
 				table.Types = append(table.Types, v)
 			}
 
@@ -361,6 +394,26 @@ func parseSInt(str string) RuneTypeType {
 
 func parseSFloat(str string) RuneTypeType {
 	return parseTypeValue(str, SFloat)
+}
+
+func parseSVector2(str string) RuneTypeType {
+	return parseTypeValue(str, SVector2)
+}
+
+func parseSVector3(str string) RuneTypeType {
+	return parseTypeValue(str, SVector3)
+}
+
+func parseSVector4(str string) RuneTypeType {
+	return parseTypeValue(str, SVector4)
+}
+
+func parseSSize2(str string) RuneTypeType {
+	return parseTypeValue(str, SSize2)
+}
+
+func parseSSize3(str string) RuneTypeType {
+	return parseTypeValue(str, SSize3)
 }
 
 func isComment(str string) bool {
